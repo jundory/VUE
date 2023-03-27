@@ -1,10 +1,4 @@
 <template>
-  <div>
-    <input 
-    class="result"
-    v-model="inputData"
-    />
-  </div>
     <div>
       <input 
       class="result" 
