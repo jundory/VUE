@@ -2,7 +2,7 @@
     <div>
       <input 
       class="result" 
-      v-model="showData"
+      v-model="showResult"
       :disabled="true" 
       />
     </div>
@@ -10,18 +10,18 @@
 <script>
 export default {
     name:'CalResult',
-    props:['showData'],
+    props:['showResult'],
     mounted(){
     },
     data(){
       return{
-        showData: this.showData,
+        showResult: this.showResult,
         inputData:'',
       }
     },
     methods:{
       test(){
-        this.inputData = this.showData
+        this.inputData = this.showResult
       }
     }
 }

@@ -1,7 +1,8 @@
 <template>
+{{strInputData}}
     <CalResult 
-    :showData="showData"
-    :key="showData"
+    :showResult="showResult"
+    :key="showResult"
     />
 
     <div class="calculator">
@@ -28,55 +29,64 @@ export default {
     },
     data(){
         return{
-            showData:'',
+            showResult:'',
             storeNum:'',
+            strInputData:'',  //계산식 보여주는 데이터
             isOperator:'',
             btnData: [7,8,9,'÷',4,5,6,'x',1,2,3,'-',0,'AC','=','+']
         }
     },
     methods:{
-      numBtn(param){  //순서 중요함.
-        if(this.showData == ''){  //초기 입력 시
-            this.showData = param *1;
+      numBtn(param){    //순서 중요함
+        if(param =='='){   //결과
+          this.result()
+        }
+        else if(param =='AC'){  //클리어
+          this.clear();
+        }
+        else if(typeof(param) == 'string'){  //operator 입력 시
+          this.operator(param)
+          this.strInputData = this.showResult + param;
+          if(this.strInputData.includes('x'||'÷'||'+'||'-')){
+              
           }
-          else if(param =='+' ||param =='-' ||param =='x' ||param =='÷'){  //operator 입력 시
-            this.operator(param)
-          }
-          else if(param =='='){   //결과
-            this.result()
-          }
-          else if(param =='AC'){  //클리어
-            this.clear();
-          }
-          else if(typeof(this.showData) == 'number'){ //숫자 입력 시
-          this.showData = (this.showData + '' + param)*1
+        }
+        else if(this.showResult == '' || typeof(this.showResult) == 'number'){  //숫자 입력 시
+          if(this.strInputData.slice(-1) == 'x'||this.strInputData.slice(-1) == '÷'||
+            this.strInputData.slice(-1) == '+'||this.strInputData.slice(-1) == '-'){  //두번째 숫자 입력 시
+            this.storeNum = this.showResult;
+            this.showResult = '';
           } 
-          else //operator 입력하고 다시 숫자 입력 시
-          this.showData= param *1; 
-          console.log("inputData :",this.showData)
+          else{
+            this.strInputData = this.strInputData +''+ param
+          }
+          console.log(this.showResult)
+          this.showResult = (this.showResult + '' + param)*1
+        }
       },
       operator(p){
-          this.storeNum = this.showData
-          this.showData = p
+          this.storeNum = this.showResult
+          // this.showResult = p
           this.isOperator = p
       },
       result(){
+          this.strInputData = this.strInputData +''+ this.showResult + '='
           switch(this.isOperator){
               case'+':
-              this.showData = (this.storeNum)*1 + (this.showData)*1
+              this.showResult = (this.storeNum)*1 + (this.showResult)*1
               break;
               case'-':
-              this.showData = (this.storeNum) *1 - (this.showData) *1
+              this.showResult = (this.storeNum) *1 - (this.showResult) *1
               break;
               case'x':
-              this.showData = this.storeNum * this.showData
+              this.showResult = this.storeNum * this.showResult
               break;
               case'÷':
-              this.showData = this.storeNum / this.showData
+              this.showResult = this.storeNum / this.showResult
           }
       },
       clear(){
-          this.showData =''
+          this.showResult =''
           this.isOperator =''
       }
     }
