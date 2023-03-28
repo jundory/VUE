@@ -1,5 +1,5 @@
 <template>
-{{strInputData}}
+{{arrInputData.join('')}}
     <CalResult 
     :showResult="showResult"
     :key="showResult"
@@ -29,48 +29,58 @@ export default {
     },
     data(){
         return{
-            showResult:'',
+            showResult:0,
             storeNum:'',
-            strInputData:'',  //계산식 보여주는 데이터
+            arrInputData:[],  //계산식 보여주는 데이터
+            treshData:[],
             isOperator:'',
-            btnData: [7,8,9,'÷',4,5,6,'x',1,2,3,'-',0,'AC','=','+']
+            btnData: [7,8,9,'÷',4,5,6,'x',1,2,3,'-',0,'CE','C','+','=']
         }
     },
     methods:{
-      numBtn(param){    //순서 중요함
-        if(param =='='){   //결과
+        //순서 중요함
+      numBtn(param){ 
+        console.log(`${param}의 type은 ${typeof(param)}`)
+        //결과
+        if(param =='='){
           this.result()
         }
-        else if(param =='AC'){  //클리어
-          this.clear();
+        //초기화
+        else if(param =='CE' || param =='C'){
+          this.clear(param);
         }
-        else if(typeof(param) == 'string'){  //operator 입력 시
+        //operator 입력 시
+        else if(typeof(param) == 'string'){
           this.operator(param)
-          this.strInputData = this.showResult + param;
-          if(this.strInputData.includes('x'||'÷'||'+'||'-')){
-              
-          }
-        }
-        else if(this.showResult == '' || typeof(this.showResult) == 'number'){  //숫자 입력 시
-          if(this.strInputData.slice(-1) == 'x'||this.strInputData.slice(-1) == '÷'||
-            this.strInputData.slice(-1) == '+'||this.strInputData.slice(-1) == '-'){  //두번째 숫자 입력 시
-            this.storeNum = this.showResult;
-            this.showResult = '';
-          } 
-          else{
-            this.strInputData = this.strInputData +''+ param
-          }
-          console.log(this.showResult)
+
+          this.arrInputData=[];
+          this.arrInputData.push(this.showResult, param)
+          this.treshData.push(this.showResult, param)
+          
+          this.storeNum = this.showResult;
+        }  
+        //수식 입력 후 숫자 초기화
+        else if(typeof((this.treshData).at(-1)) == 'string'){
+          this.showResult =''
           this.showResult = (this.showResult + '' + param)*1
+          this.treshData =[]
+        } 
+        //그 외 숫자 입력
+        else {
+          this.showResult = (this.showResult + '' + param)*1
+          this.arrInputData.push(param)
         }
       },
+      
       operator(p){
-          this.storeNum = this.showResult
+        this.storeNum = this.showResult
           // this.showResult = p
           this.isOperator = p
       },
+
       result(){
-          this.strInputData = this.strInputData +''+ this.showResult + '='
+          this.arrInputData.push(this.showResult, '=')
+          console.log(`${this.storeNum}${this.isOperator}${this.showResult}`)
           switch(this.isOperator){
               case'+':
               this.showResult = (this.storeNum)*1 + (this.showResult)*1
@@ -85,16 +95,23 @@ export default {
               this.showResult = this.storeNum / this.showResult
           }
       },
-      clear(){
-          this.showResult =''
-          this.isOperator =''
+
+      clear(c){
+        c=='CE' ? this.showResult =0 : ((this.showResult = 0),(this.arrInputData = []))
       }
     }
 }
 </script>
 
 <style scoped>
-  .calculator {
+    body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #eee;
+}
+.calculator {
   --button-width: 80px;
   --button-height: 80px;
   
@@ -107,4 +124,7 @@ export default {
   border-radius: 20px;
   }
 
+  .calculator button:active {
+  box-shadow: -4px -4px 10px -8px rgba(255, 255, 255, 1) inset, 4px 4px 10px -8px rgba(0, 0, 0, .3) inset;
+}
 </style>
