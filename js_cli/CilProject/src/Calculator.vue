@@ -34,7 +34,7 @@ export default {
             arrInputData:[],  //계산식 보여주는 데이터
             treshData:[],
             isOperator:'',
-            btnData: [7,8,9,'÷',4,5,6,'x',1,2,3,'-',0,'CE','C','+','=']
+            btnData: ['%','CE','C','←',7,8,9,'÷',4,5,6,'x',1,2,3,'-',0,'.','=','+']
         }
     },
     methods:{
@@ -45,8 +45,11 @@ export default {
         if(param =='='){
           this.result()
         }
+        else if(param == '.'){
+          this.showResult = (this.showResult +''+param)
+        }
         //초기화
-        else if(param =='CE' || param =='C'){
+        else if(param =='CE' || param =='C' ||  param =='←'){
           this.clear(param);
         }
         //operator 입력 시
@@ -68,7 +71,6 @@ export default {
         //그 외 숫자 입력
         else {
           this.showResult = (this.showResult + '' + param)*1
-          this.arrInputData.push(param)
         }
       },
       
@@ -97,14 +99,21 @@ export default {
       },
 
       clear(c){
-        c=='CE' ? this.showResult =0 : ((this.showResult = 0),(this.arrInputData = []))
+        this.showResult = this.showResult.toString()
+        if(c.includes('C')){
+          c=='C' ? ((this.showResult = 0),(this.arrInputData = [])) //btn = 'C'
+          : this.showResult =0 //btn = 'CE'
+        } else {
+        this.showResult.length <= 1 ? this.showResult = 0 //btn = '←'
+        : this.showResult = this.showResult.substr(0, (this.showResult.length -1)) //btn = '←'
+        }
       }
     }
 }
 </script>
 
 <style scoped>
-    body {
+body {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -123,7 +132,6 @@ export default {
   padding: 24px;
   border-radius: 20px;
   }
-
   .calculator button:active {
   box-shadow: -4px -4px 10px -8px rgba(255, 255, 255, 1) inset, 4px 4px 10px -8px rgba(0, 0, 0, .3) inset;
 }
