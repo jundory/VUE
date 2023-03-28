@@ -1,9 +1,13 @@
 <template>
-  <!-- <Header/> -->
+  <Header/>
   <!-- <HelloWorld /> -->
-  <!-- <Post/>  -->
   <!-- <Ref ref="test"/> -->
-  <Caculator />
+  <router-link to="/">Home</router-link>
+  <br />
+  <router-link to="/calculator">Calculator</router-link>
+  <br />
+  <router-link to="/post">Post </router-link>
+  <router-view />
 </template>
 
 <script>
@@ -11,7 +15,6 @@
 // import Header from './components/Header.vue'
 // import Ref from './components/Ref.vue'
 // import Post from './components/Post.vue'
-import Caculator from '@/Calculator.vue'
 
 export default {
   name: 'App',
@@ -20,7 +23,6 @@ export default {
     // Header,
     // Ref,
     // Post,
-    Caculator
   },
   mounted() {
     // console.log("부모에서 ref로 접근",this.$refs.test.$refs.myRef) //mounted가 되어야 접근 가능.
