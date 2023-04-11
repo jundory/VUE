@@ -4,7 +4,7 @@
       <v-img
         contain
         height="300"
-        src="@/assets/logo.svg"
+        src="@/assets/foot_logo2.png"
       />
 
       <div class="text-body-2 font-weight-light mb-n1">Welcome to</div>

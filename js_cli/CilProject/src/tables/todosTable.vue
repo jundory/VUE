@@ -31,7 +31,7 @@ export default {
         }
     },
     methods:{
-        async getPostData (){
+        async getPostData(){
             await axios.get('https://jsonplaceholder.typicode.com/todos')
             .then((response)=> this.postData = response.data)
             .catch((error)=> console.log("error!"))
