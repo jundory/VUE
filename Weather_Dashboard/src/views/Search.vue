@@ -1,6 +1,7 @@
 <template>
   <br />
   <v-select
+  class="selBox"
   v-model="select"
   :items="selectList"
   item-title="country"
@@ -9,100 +10,101 @@
   :key="selectList"
   >
 </v-select>
+<v-btn @click="SearchWthr" class="searchBox">Search</v-btn>
+<KakaoMap :CoordData="CoordData" :key="CoordData.latitude"/>
 
-  <span><v-btn @click="SerachWthr">Search</v-btn> </span>
-
-  <div v-if="!!test">
-  <Weather :weatherData="weatherData" :key="weatherData.regionName"/>
-</div>
 </template>
 <script>
-import Weather from '@/components/Weather.vue'
-import counterObj from '@/assets/country'
-
+import countryObj from '@/assets/country'
 import {mapActions} from 'pinia'
+import {mapState} from 'pinia'
 import {useUserStore} from '@/stores/user'
 
+import KakaoMap from '@/components/KakaoMap.vue'
+
 export default {
+  computed:{
+    ...mapState(useUserStore, ['getIdData', 'getRegionData'])
+  },
   components:{
-    Weather,
+    KakaoMap,
   },
   created(){
-
-  },
-  mounted(){
+    this.quarter()
   },
   data(){
     return{
-      coordinateApi : 'https://geocoding-api.open-meteo.com/v1/search?name=Seoul&count=1',
-      test : false,
-      selectList: counterObj,
+      selectList: countryObj,
+
+      CoordData: {
+        latitude : '',
+        longitude: '',
+        regionName: '',
+      },
 
       select : {
           nation: 'KR',
-          country: 'Seoul',
+          country: '',
         },
-
-      //props
-      coordinateData:{
-        latitude:'',
-        longitude:'',
-      },
-
-      weatherData :{
-        regionName:'',  //지역이름
-        windspeed:'', //풍속
-
-        //daily
-        weathercode:'', //날씨 코드
-        temperatureMax:'', //최대 온도
-        uvIndex:'', //자외선지수
-        precipitationSum:'', //강수량 합계
-        precipitationMax:'',  //강수량
-        oneWeek:'', //날짜
-        temperature:'', //온도
-      },
     }
   },
+
   methods:{
     ...mapActions(useUserStore,['coordinate']),
 
-    SerachWthr(){
+    quarter(){
+      if(!this.getIdData){
+        this.$router.push('/Login')
+      }
+      this.SelBoxFilter()
+    },
+
+    SelBoxFilter(){
+      if(!this.getIdData){
+        this.$router.push('/Login')
+      }
+      else if(this.getRegionData){
+        this.select.country = this.getRegionData
+      } else {
+        this.select.country = 'Seoul'
+      }
+    },
+
+    SearchWthr(){
       console.log('선택된 지역',this.select.country)
       this.getCoordinateData(this.select.country);
-        this.test = true
     },
 
     async getCoordinateData(param){
+      // let {latitude, longitude, regionName} = '';
+
       const response = await this.axios.get(`https://geocoding-api.open-meteo.com/v1/search?name=${param}&count=1`)
       console.log("좌표api:::::::::",response)
-      // this.coordinateData.latitude = response.data.results.map((i)=>i.latitude).join('')
-      // this.coordinateData.longitude = response.data.results.map((i)=>i.longitude).join('')
-      this.coordinateData.latitude = response.data.results.map((i)=>i.latitude).join('')
-      this.coordinateData.longitude = response.data.results.map((i)=>i.longitude).join('')
-      this.weatherData.regionName = response.data.results.map((i)=> i.name).join('')
 
-      this.coordinate(this.coordinateData.latitude, this.coordinateData.longitude)
-      this.getWeatherData()
+      this.CoordData.latitude = response.data.results.map((i)=>i.latitude).join('')
+      this.CoordData.longitude = response.data.results.map((i)=>i.longitude).join('')
+      this.CoordData.regionName = response.data.results.map((i)=> i.name).join('')
+      //store
+      this.coordinate(this.CoordData.latitude, this.CoordData.longitude, this.CoordData.regionName)
+      console.log(this.CoordData.latitude, this.CoordData.longitude, this.CoordData.regionName)
+
+      // this.$router.push('/Weather')
     },
-
-    async getWeatherData(){
-      const response = await this.axios.get(`https://api.open-meteo.com/v1/forecast?latitude=${this.coordinateData.latitude}&longitude=${this.coordinateData.longitude}&daily=weathercode,temperature_2m_max,uv_index_max,precipitation_sum,precipitation_probability_max&current_weather=true&timezone=Asia%2FTokyo`)
-        console.log("날씨api::::::::::",response)
-        this.weatherData.windspeed = response.data.current_weather.windspeed
-        // this.weatherData.weathercode = response.data.current_weather.weathercode
-
-        this.weatherData.temperature = response.data.current_weather.temperature
-        this.weatherData.weathercode = response.data.daily.weathercode
-        this.weatherData.precipitationMax = response.data.daily.precipitation_probability_max
-        this.weatherData.precipitationSum = response.data.daily.precipitation_sum
-        this.weatherData.uvIndex = response.data.daily.uv_index_max
-        this.weatherData.temperatureMax = response.data.daily.temperature_2m_max
-        this.weatherData.oneWeek = response.data.daily.time
-    },
-  },
+  }
 }
 </script>
-<style scoped>
 
+<style scoped>
+  .selBox{
+    float: left;
+    width: 40%;
+    padding: 10px;
+  }
+  .searchBox{
+    float: left;
+    width: 7%;
+    height: 54px;
+    padding: 10px;
+    top: 11px;
+  }
 </style>

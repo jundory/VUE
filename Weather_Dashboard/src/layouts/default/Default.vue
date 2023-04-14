@@ -16,10 +16,22 @@
             :value="item"
             active-color="primary"
           >
+            <!-- :disabled="!!!getIdData" -->
+            <!-- <div v-if="!!getIdData"> -->
             <router-link :to="item.path" style="text-decoration: none; color:black">
               <v-list-item-title>{{ item.title }}</v-list-item-title>
             </router-link>
-
+            <!-- </div>
+            <div v-else-if="item.title =='홈'">
+            <router-link to="/" style="text-decoration: none; color:black">
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </router-link>
+            </div>
+            <div v-else>
+            <router-link to="/Login" style="text-decoration: none; color:black">
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </router-link>
+            </div> -->
             <template v-slot:prepend>
               <v-icon :icon="item.icon"></v-icon>
             </template>
@@ -32,42 +44,47 @@
 </template>
 
 <script>
+  import authMixin from '@/mixins/authMixin';
   import DefaultBar from './AppBar.vue'
   import DefaultView from './View.vue'
+
+  import {mapState} from 'pinia'
+  import {useUserStore} from '@/stores/user'
 
   export default {
     components :{
       DefaultBar,
       DefaultView
     },
-    created(){
+    mixins:[authMixin],
 
+    computed:{
+      ...mapState(useUserStore, ['getIdData', 'getRegionData'])
     },
+
     data () {
       return {
         drawer: true,
         group: null,
         items: [
-          // {
-          //   title: 'Login',
-          //   icon: 'mdi-login',
-          //   path: '/Login'
-          // },
           {
-            title: 'Home',
+            title: '홈',
             icon: 'mdi-home-outline',
             path: '/'
           },
           {
-            title: 'Search',
+            title: '검색',
             icon: 'mdi-cloud-search-outline',
             path: '/Search'
+          },
+          {
+            title: '날씨',
+            icon: 'mdi-weather-windy',
+            path: '/Weather'
           },
         ],
       }
     },
-    methods:{
-    }
   }
 
 

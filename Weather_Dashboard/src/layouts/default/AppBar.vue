@@ -47,18 +47,19 @@
 </template>
 
 <script>
-import {mapState} from 'pinia'
+// import {mapState} from 'pinia'
 import {mapActions} from 'pinia'
 import {useUserStore} from '@/stores/user'
+import authMixin from '@/mixins/authMixin'
 // import router from '@/router';
 
 export default{
-  computed:{
-    ...mapState(useUserStore, ['getIdData']),
-    getId:'getIdData',
-  },
+  // computed:{
+  //   ...mapState(useUserStore, ['getIdData']),
+  //   getId:'getIdData',
+  // },
+  mixins:[authMixin],
   mounted(){
-    this.test()
   },
   data(){
     return{
@@ -75,9 +76,6 @@ export default{
       console.log(this.getIdData,"asdasd")
       this.$router.push('/Login')
     },
-    test(){
-      console.log('나오냐?',useUserStore.getIdData)
-    }
   }
 }
 

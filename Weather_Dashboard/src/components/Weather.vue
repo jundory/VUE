@@ -1,8 +1,5 @@
 <template>
-  <v-card
-    class="mx-auto"
-    max-width="600"
-  >
+
   <!-- 타이틀 -->
     <v-card-item :title="this.weatherData.regionName">
       <template v-slot:subtitle>
@@ -97,7 +94,7 @@
         {{ !isToggle ? 'Full Report' : 'Hide Report' }}
       </v-btn>
     </v-card-actions>
-  </v-card>
+
 </template>
 <script>
 import WeatherObj from '@/assets/common'

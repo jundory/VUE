@@ -1,15 +1,11 @@
 <template>
   <v-container class="fill-height">
     <v-responsive class="d-flex align-center text-center fill-height">
-      <v-img
-        contain
-        height="300"
-        src="@/assets/foot_logo2.png"
-      />
 
-      <div class="text-body-2 font-weight-light mb-n1">Welcome to</div>
+      <div class="text-body-2 font-weight-light mb-n1">ㅎㅇㅁ
+      </div>
 
-      <h1 class="text-h2 font-weight-bold">Vuetify</h1>
+      <!-- <h1 class="text-h2 font-weight-bold">날씨 검색</h1> -->
 
       <div class="py-14" />
 
