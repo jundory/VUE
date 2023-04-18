@@ -32,10 +32,12 @@ export const useUserStore = defineStore('user', {
       this.IdData = id
       this.PwdData = pwd
     },
-    coordinate(lat, long, region){
+    coordinate(lat, long){
       this.latitude = lat
       this.longitude = long
-      this.regionName = region
+    },
+    setRegion(i){
+      this.regionName = i
     }
   },
 })

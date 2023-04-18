@@ -1,13 +1,24 @@
 <template>
   <div>
     <div id="map"></div>
+    <!-- <div id="clickLatlng"></div> -->
+    <div>클릭한 위치의 위도는 {{this.getLat}} 이고, 경도는 {{this.getLong}}입니다</div>
+    <!-- <div style="padding:5px;">Hello World!</div> -->
   </div>
 </template>
 
 <script>
+import { mapActions } from 'pinia';
+import { mapState } from 'pinia';
+import {useUserStore} from '@/stores/user'
+
 export default {
   name: "KakaoMap", // 컴포넌트 이름 지정
   props: ['CoordData'],
+
+  computed : {
+    ...mapState(useUserStore,['getLatitude','getLongitude'])
+  },
 
   mounted() {
     this.startMap()
@@ -16,22 +27,30 @@ export default {
   data() {
     return {
       map : null,
+      marker : null,
+
       CoordFilter: {
         latitude: '',
         longitude: ''
-      }
+      },
+      getLat:'',
+      getLong:'',
+
+      iwRemoveable: true
     };
   },
 
   methods: {
+    ...mapActions(useUserStore,['coordinate']),
       startMap(){
         if (window.kakao && window.kakao.maps) {
-      // 카카오 객체가 있고, 카카오 맵그릴 준비가 되어 있다면 맵 실행
-      this.loadMap();
-    } else {
-      // 없다면 카카오 스크립트 추가 후 맵 실행
-      this.loadScript();
-    }
+          // 카카오 객체가 있고, 카카오 맵그릴 준비가 되어 있다면 맵 실행
+          this.loadMap();
+
+        } else {
+          // 없다면 카카오 스크립트 추가 후 맵 실행
+          this.loadScript();
+        }
       },
 
       loadScript() {
@@ -45,19 +64,56 @@ export default {
       },
 
       loadMap() {
-        this.CoordData.latitude ? this.CoordFilter.latitude = this.CoordData.latitude : this.CoordFilter.latitude = '37.566'
-        this.CoordData.longitude ? this.CoordFilter.longitude = this.CoordData.longitude : this.CoordFilter.longitude = '126.9784'
+        this.CoordData.latitude ? this.CoordFilter.latitude = this.CoordData.latitude : this.CoordFilter.latitude = '37.563518'
+        this.CoordData.longitude ? this.CoordFilter.longitude = this.CoordData.longitude : this.CoordFilter.longitude = '126.839404'
+        // this.CoordData.latitude ? this.CoordFilter.latitude = this.CoordData.latitude : this.CoordFilter.latitude = '37.563518'
+        // this.CoordData.longitude ? this.CoordFilter.longitude = this.CoordData.longitude : this.CoordFilter.longitude = '126.839404'
         const container = document.getElementById("map"); // 지도를 담을 DOM 영역
         const options = {
           // 지도를 생성할 때 필요한 기본 옵션
           center: new window.kakao.maps.LatLng(this.CoordFilter.latitude,this.CoordFilter.longitude), // 지도의 중심좌표
           level: 3, // 지도의 레벨(확대, 축소 정도)
         };
-
         this.map = new window.kakao.maps.Map(container, options); // 지도 생성 및 객체 리턴
+
+        this.createMarker()
       },
+
+      createMarker() {
+        this.marker = new window.kakao.maps.Marker({
+          // 지도 중심좌표에 마커를 생성합니다
+          position: this.map.getCenter(),
+          clickable: true
+        });
+        this.marker.setMap(this.map);
+
+        window.kakao.maps.event.addListener(this.map, 'click', this.clickMarker);
+        this.coordinate((this.getLat).toString(), (this.getLong).toString())
+        console.log((this.getLat), (this.getLong))
+
+        window.kakao.maps.event.addListener(this.marker, 'click', this.clickInfo);
+      },
+
+      clickMarker(mouseEvent) {          // 클릭한 위도, 경도 정보를 가져옵니다
+          const latlng = mouseEvent.latLng;
+          // 마커 위치를 클릭한 위치로 옮깁니다
+          this.marker.setPosition(latlng);
+
+          this.getLat = latlng.getLat()
+          this.getLong = latlng.getLng()
+          console.log("클릭 좌표", (this.getLat).toString(), (this.getLong).toString())
+      },
+
+      clickInfo(){
+        let iwContent = `위도 : ${this.getLat} 경도 : ${this.getLong}` // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+        const infowindow = new kakao.maps.InfoWindow({
+        content : iwContent,
+        removable : this.iwRemoveable
+        });
+        infowindow.open(this.map, this.marker);
+       }
+    }
   }
-}
 </script>
 
 <style scoped>

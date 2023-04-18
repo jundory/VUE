@@ -47,6 +47,7 @@ export default {
       else if(!this.getRegionData){
         this.$router.push('/Search')
       } else {
+        console.log("aasfdsaf",this.getLatitude, this.getLongitude)
         this.getWeatherData(this.getLatitude, this.getLongitude)
       }
     },
@@ -65,6 +66,7 @@ export default {
         this.weatherData.uvIndex = response.data.daily.uv_index_max
         this.weatherData.temperatureMax = response.data.daily.temperature_2m_max
         this.weatherData.oneWeek = response.data.daily.time
+        console.log("this.weatherData",this.weatherData)
     },
   }
 }

@@ -24,7 +24,7 @@ import KakaoMap from '@/components/KakaoMap.vue'
 
 export default {
   computed:{
-    ...mapState(useUserStore, ['getIdData', 'getRegionData'])
+    ...mapState(useUserStore, ['getIdData', 'getRegionData','getLatitude'])
   },
   components:{
     KakaoMap,
@@ -50,20 +50,17 @@ export default {
   },
 
   methods:{
-    ...mapActions(useUserStore,['coordinate']),
+    ...mapActions(useUserStore,['coordinate', 'setRegion']),
 
     quarter(){
       if(!this.getIdData){
         this.$router.push('/Login')
       }
-      this.SelBoxFilter()
+      else this.SelBoxFilter()
     },
 
     SelBoxFilter(){
-      if(!this.getIdData){
-        this.$router.push('/Login')
-      }
-      else if(this.getRegionData){
+      if(this.getRegionData){
         this.select.country = this.getRegionData
       } else {
         this.select.country = 'Seoul'
@@ -85,8 +82,11 @@ export default {
       this.CoordData.longitude = response.data.results.map((i)=>i.longitude).join('')
       this.CoordData.regionName = response.data.results.map((i)=> i.name).join('')
       //store
-      this.coordinate(this.CoordData.latitude, this.CoordData.longitude, this.CoordData.regionName)
+      this.coordinate(this.CoordData.latitude, this.CoordData.longitude)
+      this.setRegion(this.CoordData.regionName)
       console.log(this.CoordData.latitude, this.CoordData.longitude, this.CoordData.regionName)
+      console.log("위도test",this.getLatitude)
+
 
       // this.$router.push('/Weather')
     },
