@@ -26,6 +26,11 @@ const routes = [
         name: 'Weather',
         component: () => import(/* webpackChunkName: "Weather" */ '@/views/Weather.vue')
       },
+      {
+        path: '/SearchHistory',
+        name: 'SearchHistory',
+        component: () => import(/* webpackChunkName: "Weather" */ '@/views/SearchHistory.vue')
+      },
     ],
   },
 ]

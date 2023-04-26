@@ -11,7 +11,7 @@ import VueAxios from 'vue-axios'
 import { createPinia } from 'pinia'
 // Composables
 import { createApp } from 'vue'
-import router from './router/index'
+import router from './router/router'
 // Plugins
 import { registerPlugins } from '@/plugins'
 

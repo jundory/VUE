@@ -24,7 +24,7 @@ import KakaoMap from '@/components/KakaoMap.vue'
 
 export default {
   computed:{
-    ...mapState(useUserStore, ['getIdData', 'getRegionData','getLatitude'])
+    ...mapState(useUserStore, ['getIdData', 'getRegionData', 'getLatitude', 'getSearchData'])
   },
   components:{
     KakaoMap,
@@ -50,29 +50,29 @@ export default {
   },
 
   methods:{
-    ...mapActions(useUserStore,['coordinate', 'setRegion']),
+    ...mapActions(useUserStore,['setCoordinate', 'setRegionData','setSearchData']),
 
     quarter(){
       if(!this.getIdData){
+        alert('로그인이 필요합니다.')
         this.$router.push('/Login')
       }
       else this.SelBoxFilter()
     },
 
     SelBoxFilter(){
-      if(this.getRegionData){
-        this.select.country = this.getRegionData
-      } else {
-        this.select.country = 'Seoul'
-      }
+      this.getRegionData ? this.select.country = this.getRegionData : this.select.country = 'Seoul'
     },
 
     SearchWthr(){
       console.log('선택된 지역',this.select.country)
-      this.getCoordinateData(this.select.country);
+      if(!this.getSearchData.includes(this.select.country)){
+      this.setSearchData(this.select.country)
+    }
+      this.ApiCoordinate(this.select.country);
     },
 
-    async getCoordinateData(param){
+    async ApiCoordinate(param){
       // let {latitude, longitude, regionName} = '';
 
       const response = await this.axios.get(`https://geocoding-api.open-meteo.com/v1/search?name=${param}&count=1`)
@@ -82,13 +82,8 @@ export default {
       this.CoordData.longitude = response.data.results.map((i)=>i.longitude).join('')
       this.CoordData.regionName = response.data.results.map((i)=> i.name).join('')
       //store
-      this.coordinate(this.CoordData.latitude, this.CoordData.longitude)
-      this.setRegion(this.CoordData.regionName)
-      console.log(this.CoordData.latitude, this.CoordData.longitude, this.CoordData.regionName)
-      console.log("위도test",this.getLatitude)
-
-
-      // this.$router.push('/Weather')
+      this.setCoordinate(this.CoordData.latitude, this.CoordData.longitude)
+      this.setRegionData(this.CoordData.regionName)
     },
   }
 }

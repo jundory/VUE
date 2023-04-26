@@ -18,7 +18,7 @@ export default {
   },
 
   mounted(){
-    this.quarter()
+    setTimeout(()=>this.quarter(),1000)
   },
 
   data(){
@@ -42,12 +42,13 @@ export default {
   methods:{
     quarter(){
       if(!this.getIdData){
+        alert('로그인이 필요합니다.')
         this.$router.push('/Login')
       }
       else if(!this.getRegionData){
+        alert('먼저 지역을 검색해주세요.')
         this.$router.push('/Search')
       } else {
-        console.log("aasfdsaf",this.getLatitude, this.getLongitude)
         this.getWeatherData(this.getLatitude, this.getLongitude)
       }
     },
@@ -66,7 +67,6 @@ export default {
         this.weatherData.uvIndex = response.data.daily.uv_index_max
         this.weatherData.temperatureMax = response.data.daily.temperature_2m_max
         this.weatherData.oneWeek = response.data.daily.time
-        console.log("this.weatherData",this.weatherData)
     },
   }
 }

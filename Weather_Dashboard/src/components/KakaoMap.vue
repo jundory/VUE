@@ -2,14 +2,15 @@
   <div>
     <div id="map"></div>
     <!-- <div id="clickLatlng"></div> -->
-    <div>클릭한 위치의 위도는 {{this.getLat}} 이고, 경도는 {{this.getLong}}입니다</div>
+    <div>클릭한 위치의 위도는 {{CoordFilter.latitude}} 이고, 경도는 {{CoordFilter.longitude}}입니다</div>
+    <div class="test"></div>
     <!-- <div style="padding:5px;">Hello World!</div> -->
   </div>
 </template>
 
 <script>
-import { mapActions } from 'pinia';
 import { mapState } from 'pinia';
+import { mapActions } from 'pinia';
 import {useUserStore} from '@/stores/user'
 
 export default {
@@ -33,15 +34,13 @@ export default {
         latitude: '',
         longitude: ''
       },
-      getLat:'',
-      getLong:'',
 
       iwRemoveable: true
     };
   },
 
   methods: {
-    ...mapActions(useUserStore,['coordinate']),
+    ...mapActions(useUserStore,['setCoordinate']),
       startMap(){
         if (window.kakao && window.kakao.maps) {
           // 카카오 객체가 있고, 카카오 맵그릴 준비가 되어 있다면 맵 실행
@@ -64,10 +63,10 @@ export default {
       },
 
       loadMap() {
-        this.CoordData.latitude ? this.CoordFilter.latitude = this.CoordData.latitude : this.CoordFilter.latitude = '37.563518'
-        this.CoordData.longitude ? this.CoordFilter.longitude = this.CoordData.longitude : this.CoordFilter.longitude = '126.839404'
-        // this.CoordData.latitude ? this.CoordFilter.latitude = this.CoordData.latitude : this.CoordFilter.latitude = '37.563518'
-        // this.CoordData.longitude ? this.CoordFilter.longitude = this.CoordData.longitude : this.CoordFilter.longitude = '126.839404'
+        this.getLatitude ? this.CoordFilter.latitude = this.getLatitude : this.CoordFilter.latitude = '37.563518'
+        this.getLongitude ? this.CoordFilter.longitude = this.getLongitude : this.CoordFilter.longitude = '126.839404'
+        console.log("지도 위치는?", this.CoordFilter.latitude)
+
         const container = document.getElementById("map"); // 지도를 담을 DOM 영역
         const options = {
           // 지도를 생성할 때 필요한 기본 옵션
@@ -87,27 +86,28 @@ export default {
         });
         this.marker.setMap(this.map);
 
-        window.kakao.maps.event.addListener(this.map, 'click', this.clickMarker);
-        this.coordinate((this.getLat).toString(), (this.getLong).toString())
-        console.log((this.getLat), (this.getLong))
+        window.kakao.maps.event.addListener(this.map, 'click', this.clickMap);
 
-        window.kakao.maps.event.addListener(this.marker, 'click', this.clickInfo);
+        window.kakao.maps.event.addListener(this.marker, 'click', this.clickMarker);
       },
 
-      clickMarker(mouseEvent) {          // 클릭한 위도, 경도 정보를 가져옵니다
-          const latlng = mouseEvent.latLng;
-          // 마커 위치를 클릭한 위치로 옮깁니다
-          this.marker.setPosition(latlng);
+      clickMap(mouseEvent) {          // 클릭한 위도, 경도 정보를 가져옵니다
+        const latlng = mouseEvent.latLng;
+        // 마커 위치를 클릭한 위치로 옮깁니다
+        this.marker.setPosition(latlng);
 
-          this.getLat = latlng.getLat()
-          this.getLong = latlng.getLng()
-          console.log("클릭 좌표", (this.getLat).toString(), (this.getLong).toString())
+        this.CoordFilter.latitude = latlng.getLat()
+        this.CoordFilter.longitude = latlng.getLng()
+        this.setCoordinate(this.CoordFilter.latitude.toFixed(4), this.CoordFilter.longitude.toFixed(4))
+          console.log("클릭 좌표", latlng.getLat().toFixed(4),latlng.getLng().toFixed(4))
       },
 
-      clickInfo(){
-        let iwContent = `위도 : ${this.getLat} 경도 : ${this.getLong}` // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
-        const infowindow = new kakao.maps.InfoWindow({
-        content : iwContent,
+      clickMarker(){
+        // let iwContent = `위도 : ${ this.CoordFilter.latitude} 경도 : ${this.CoordFilter.longitude}` // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+        const testTag = document.querySelector('.test')
+        testTag.innerText = "클릭 시 해당 좌표 날씨 검색" // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+        const infowindow = new window.kakao.maps.InfoWindow({
+        content : testTag,
         removable : this.iwRemoveable
         });
         infowindow.open(this.map, this.marker);

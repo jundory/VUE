@@ -7,7 +7,8 @@ export const useUserStore = defineStore('user', {
       PwdData:'',
       latitude:'',
       longitude:'',
-      regionName:'',
+      RegionName:'',
+      SearchData:[],
     }
   },
   getters: {
@@ -17,14 +18,19 @@ export const useUserStore = defineStore('user', {
     getPwdData(state){
       return state.PwdData
     },
+
     getLatitude(state){
       return state.latitude
     },
     getLongitude(state){
       return state.longitude
     },
+
     getRegionData(state){
-      return state.regionName
+      return state.RegionName
+    },
+    getSearchData(state){
+      return state.SearchData
     }
   },
   actions: {
@@ -32,12 +38,15 @@ export const useUserStore = defineStore('user', {
       this.IdData = id
       this.PwdData = pwd
     },
-    coordinate(lat, long){
+    setCoordinate(lat, long){
       this.latitude = lat
       this.longitude = long
     },
-    setRegion(i){
-      this.regionName = i
+    setRegionData(region){
+      this.RegionName = region
+    },
+    setSearchData(region){
+      this.SearchData.push(region)
     }
   },
 })
